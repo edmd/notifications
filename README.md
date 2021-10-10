@@ -73,3 +73,13 @@ The notification service can return back notifications for a given user id.
     - The UI should have two pages & a menu system to navigate between them.
     - Create event page: Web form to create a new Event. Hard-code the userId.
     - List user notifications page: List all the notifications for the hard-coded userId above.
+
+GET POST
+https://localhost:44309/api/Notifications?userId=ade8d623-877d-41e3-9160-dc274c48c88b&type=AppointmentCancelled
+
+{
+  "FirstName": "John",
+  "AppointmentDateTime": "2021-10-08T10:00:00",
+  "OrganisationName": "Brockelbank Group Practice",
+  "Reason": "Patient Deceased"
+}

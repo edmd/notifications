@@ -1,27 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Notifications.Common.Interfaces;
 using Notifications.DataAccess;
 using Notifications.DataAccess.Access;
+using Notifications.Mapping;
 using Notifications.Services;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace Notifications
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -30,7 +23,6 @@ namespace Notifications
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -39,12 +31,26 @@ namespace Notifications
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
 
-            var connection = @"Server=.;Database=notifications-db;Trusted_Connection=True;ConnectRetryCount=0";
+            var connection = @"Server=.\SQLExpress;Database=notifications-db;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<NotificationsDbContext>
                 (options => options.UseSqlServer(connection));
 
+            //DbContextOptions<NotificationsDbContext> dbOptions = new DbContextOptionsBuilder<NotificationsDbContext>()
+            //        .UseInMemoryDatabase("name=Notifications")
+            //        .EnableSensitiveDataLogging()
+            //        .Options;
+            //services.AddDbContext<NotificationsDbContext>(options => { options.UseInMemoryDatabase("name=Notifications"); });
+
             services.AddTransient<INotificationsAccess, NotificationsAccess>();
             services.AddTransient<INotificationsService, NotificationsService>();
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new NotificationMapper());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Notifications.DataAccess.Entities;
 
 namespace Notifications.DataAccess
@@ -13,7 +10,7 @@ namespace Notifications.DataAccess
         { }
 
         public DbSet<NotificationEntity> Notifications { get; set; }
-        public DbSet<TemplateEntity> Templates { get; set; }
+        public DbSet<NotificationTypeEntity> NotificationTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

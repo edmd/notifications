@@ -1,28 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Notifications.Common.Interfaces;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Notifications.Common;
 using Notifications.Common.Models;
 using Notifications.DataAccess.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Notifications.DataAccess.Access
 {
-    public class NotificationsAccess : INotificationsAccess
+	public class NotificationsAccess : INotificationsAccess
     {
-        private readonly NotificationsDbContext dbContext;
+        private readonly NotificationsDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public NotificationsAccess(NotificationsDbContext dbContext)
+        public NotificationsAccess(NotificationsDbContext dbContext, IMapper mapper)
         {
-            this.dbContext = dbContext;
+            this._dbContext = dbContext;
+            this._mapper = mapper;
         }
 
-        public IEnumerable<NotificationModel> GetAllNotifications()
+        public async Task<IEnumerable<NotificationModel>> GetNotifications(Guid userId, NotificationType? type = null)
         {
-            return dbContext.Notifications.Select(x => new NotificationModel()
+            var notifications = _dbContext.Notifications.Include(c => c.NotificationType).Where(x => x.UserId == userId);
+            if (type.HasValue)
             {
-                Id = x.Id,
-            });
+                notifications = notifications.Where(x => x.NotificationType.Type == type.Value.ToString());
+            }
+
+            return _mapper.Map<List<NotificationModel>>(notifications);
+        }
+
+        public async Task<Guid> AddNotification(NotificationEntity entity)
+        {
+            // Debating return of Guid.Empty on Exception
+            _dbContext.Notifications.Update(entity);
+            _dbContext.SaveChanges();
+
+            return entity.Id;
+        }
+
+        public async Task<NotificationTypeEntity> GetNotificationType(NotificationType type)
+        {
+            return _dbContext.NotificationTypes.FirstOrDefault(x => x.Type == type.ToString());
         }
     }
 }

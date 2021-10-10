@@ -28,6 +28,16 @@ namespace Notifications.DataAccess.Migrations
 
                     b.ToTable("Notifications");
                 });
+
+            modelBuilder.Entity("Notifications.DataAccess.NotificationTypeEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
+
+                b.HasKey("Id");
+
+                b.ToTable("NotificationTypes");
+            });
 #pragma warning restore 612, 618
         }
     }
