@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Notifications.Common;
+using Notifications.Common.Models;
 using Notifications.DataAccess;
 using Notifications.DataAccess.Entities;
+using Notifications.Mapping;
 using Notifications.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -14,7 +17,7 @@ namespace Notifications.Tests.Fixtures
 	{
 		private readonly NotificationsDbContext _dbContext;
 		public static Guid NotFoundId = Guid.NewGuid();
-		public static Guid NotificationId = Guid.NewGuid();
+		public static Guid NotificationId = new Guid("ade8d623-877d-41e3-9160-dc274c48c88b");
 		public static Guid NotificationTypeId = Guid.NewGuid();
 		public static Guid UserId = Guid.NewGuid();
 
@@ -104,6 +107,19 @@ namespace Notifications.Tests.Fixtures
 			return notification;
 		}
 
+		public static NotificationEntity NewNotification()
+		{
+			notification.AppointmentDateTime = AppointmentDateTime;
+			notification.Id = Guid.NewGuid();
+			notification.NotificationType = GetNotificationType();
+			notification.UserId = UserId;
+			notification.FirstName = FirstName;
+			notification.OrganisationName = OrganisationName;
+			notification.MessageContent = MessageContent();
+
+			return notification;
+		}
+
 		public static List<NotificationEntity> NotificationList()
 		{
 			return new List<NotificationEntity>()
@@ -125,6 +141,16 @@ namespace Notifications.Tests.Fixtures
 					OrganisationName = OrganisationName
 				}
 			};
+		}
+
+		public static List<NotificationModel> NotificationListModels()
+		{
+			var mappingConfig = new MapperConfiguration(mc =>
+			{
+				mc.AddProfile(new NotificationMapper());
+			});
+			IMapper mapper = mappingConfig.CreateMapper();
+			return mapper.Map<List<NotificationModel>>(NotificationList());
 		}
 	}
 

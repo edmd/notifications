@@ -33,7 +33,7 @@ namespace Notifications.Controllers
 		[HttpPost]
 		public async Task<IActionResult> NotificationEvent(Guid userId, string type, [FromBody] object data)
 		{
-			if (data == null)
+			if (data == null || string.IsNullOrEmpty(data.ToString()))
 			{
 				return BadRequest("Notification Event data cannot be null");
 			}

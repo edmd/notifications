@@ -35,12 +35,6 @@ namespace Notifications
             services.AddDbContext<NotificationsDbContext>
                 (options => options.UseSqlServer(connection));
 
-            //DbContextOptions<NotificationsDbContext> dbOptions = new DbContextOptionsBuilder<NotificationsDbContext>()
-            //        .UseInMemoryDatabase("name=Notifications")
-            //        .EnableSensitiveDataLogging()
-            //        .Options;
-            //services.AddDbContext<NotificationsDbContext>(options => { options.UseInMemoryDatabase("name=Notifications"); });
-
             services.AddTransient<INotificationsAccess, NotificationsAccess>();
             services.AddTransient<INotificationsService, NotificationsService>();
 
